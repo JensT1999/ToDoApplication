@@ -1,33 +1,31 @@
 package application;
 	
-import application.frames.ToDoFrame;
-import application.utils.ToDoPrio;
-import application.utils.ToDos;
+import application.frames.utils.FrameManager;
+import application.mysql.MySQL;
+import application.mysql.MySQLManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
 
 public class Main extends Application {
 	
-	private ToDoFrame tdf;
+	private MySQL db;
+	private MySQLManager mm;
+	private FrameManager fm;
 	
 	@Override
 	public void init() throws Exception {
-		ToDos td = new ToDos("Müll", ToDoPrio.HIGHEST, "10.10.2024");
-		this.tdf = new ToDoFrame();
+		this.db = new MySQL("jdbc:mysql://localhost/todolist", "root", "");
+		this.db.connect();
 		
-		this.tdf.getToDoList().addToList(td);
+		this.mm = new MySQLManager(this.db);
 		
-		this.tdf.getTvb().updateComplete();
+		this.fm = new FrameManager(this.mm, 700, 500);
 	}
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Scene scene = new Scene(this.tdf, 700, 500);
-			
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
+			primaryStage.setScene(this.fm.getScene());
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

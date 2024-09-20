@@ -1,7 +1,12 @@
 package application.frames;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
+import application.frames.utils.SwitchButton;
 import application.utils.SortType;
 import application.utils.ToDoPrio;
 import application.utils.ToDos;
@@ -34,6 +39,8 @@ public class InteractionBox extends VBox {
 	private MenuItem mi6;
 	private MenuItem mi7;
 	
+	private SwitchButton sb;
+	
 	public InteractionBox(ToDoFrame tdf) {
 		this.tdf = tdf;
 		
@@ -52,6 +59,8 @@ public class InteractionBox extends VBox {
 		this.mB1 = new MenuButton("Sortierung");
 		this.mi6 = new MenuItem("Nach " + SortType.BY_PRIO.toString());
 		this.mi7 = new MenuItem("Nach " + SortType.BY_DEADLINE.toString());
+		
+		this.sb = this.tdf.getFm().getSb();
 		
 		this.buildBox();
 	}
@@ -110,7 +119,8 @@ public class InteractionBox extends VBox {
 		this.b2.setMaxWidth(150);
 		VBox.setMargin(b2, new Insets(10));
 		this.b2.setOnMouseClicked(e ->  {
-			this.tdf.getToDoList().removeCheckedOnes();
+			ArrayList<ToDos> list = this.tdf.getToDoList().removeCheckedOnes();
+			list.forEach(o -> this.tdf.getDb().removeFromDb(o));
 			this.tdf.getTvb().updateComplete();
 		});
 		
@@ -134,7 +144,9 @@ public class InteractionBox extends VBox {
 		this.mB1.getItems().addAll(mi6, mi7);
 		VBox.setMargin(mB1, new Insets(10));
 		
-		this.getChildren().addAll(tf1, mB, dp, b1, b2, mB1);
+		VBox.setMargin(sb, new Insets(10));
+		
+		this.getChildren().addAll(tf1, mB, dp, b1, b2, mB1, sb);
 	}
 	
 	private void addToDo() {
@@ -173,7 +185,9 @@ public class InteractionBox extends VBox {
 				}
 			}
 			
-			ToDos td = new ToDos(info, prio, deadline);
+			ToDos td = new ToDos(0, info, prio, deadline);
+			
+			this.tdf.getDb().addToDb(td);
 			
 			this.tdf.getToDoList().addToList(td);
 			

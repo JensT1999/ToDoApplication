@@ -24,4 +24,28 @@ public enum ToDoPrio {
 	public String toString() {
 		return name;
 	}
+	
+	public static ToDoPrio convertInt(int i) {
+		ToDoPrio prio = switch (i) {
+			case 1 -> ToDoPrio.LOWEST;
+			case 2 -> ToDoPrio.LOW;
+			case 3 -> ToDoPrio.MIDDLE;
+			case 4 -> ToDoPrio.HIGH;
+			case 5 -> ToDoPrio.HIGHEST;
+			default -> null;
+		};
+		return prio;
+	}
+	
+	public static ToDoPrio convertString(String input) {
+		ToDoPrio prio = switch (input.toLowerCase()) {
+			case "höchste" -> ToDoPrio.HIGHEST;
+			case "hoch" -> ToDoPrio.HIGH;
+			case "mittel" -> ToDoPrio.MIDDLE;
+			case "niedrig" -> ToDoPrio.LOW;
+			case "niedrigste" -> ToDoPrio.LOWEST;
+			default -> null;
+		};
+		return prio;
+	}
 }

@@ -16,6 +16,10 @@ public class ToDoList {
 		this.list = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 	}
 	
+	public ToDoList(ObservableList<ToDos> list) {
+		this.list = list;
+	}
+	
 	public void addToList(ToDos td) {
 		if(!this.list.contains(td)) {
 			this.list.add(td);
@@ -32,7 +36,7 @@ public class ToDoList {
 		}
 	}
 	
-	public void removeCheckedOnes() {
+	public ArrayList<ToDos> removeCheckedOnes() {
 		if(this.list != null && this.list.size() > 0) {
 			ArrayList<ToDos> removeOnes = new ArrayList<ToDos>();
 			
@@ -54,7 +58,10 @@ public class ToDoList {
 					}
 				}
 			}
+			
+			return removeOnes;
 		}
+		return null;
 	}
 	
 	public void sort(SortType type) {

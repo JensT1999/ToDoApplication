@@ -1,12 +1,17 @@
 package application.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import application.utils.calendar.CalendarSource;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -71,5 +76,48 @@ public class Utils {
 		}
 		return null;
 	}
+	
+	public static CalendarSource getMostImportant(Object[] o) {
+		if(o != null) {
+			try {
+				Future<CalendarSource> future = exe.submit(new Callable<CalendarSource>() {
 
+					@Override
+					public CalendarSource call() throws Exception {
+						ArrayList<CalendarSource> list = new ArrayList<CalendarSource>();
+						for(Object obj : o) {
+							if(obj != null) {
+								CalendarSource cs = (CalendarSource) obj;
+								
+								if(cs.getToDo() != null) {
+									list.add(cs);
+								}
+							}
+						}
+						
+						if(list.size() > 0) {
+							Collections.sort(list, new Comparator<CalendarSource>() {
+
+								@Override
+								public int compare(CalendarSource o1, CalendarSource o2) {
+									Integer i1 = o1.getToDo().getPrio().getPrioAsInt();
+									Integer i2 = o2.getToDo().getPrio().getPrioAsInt();
+									return i2.compareTo(i1);
+								}
+							});
+							
+							return list.get(0);	
+						}		
+						
+						return null;
+					}
+				});
+				
+				return future.get();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 }
