@@ -31,6 +31,8 @@ public class CalendarUpdateBox extends HBox {
 	private TableView<CalendarSource> tv;
 	
 	private Button b1;
+	
+	private int shownCalendar;
 		
 	public CalendarUpdateBox(CalendarFrame cf) {
 		this.cf = cf;
@@ -41,6 +43,8 @@ public class CalendarUpdateBox extends HBox {
 		this.tv = new TableView<CalendarSource>();
 		
 		this.b1 = new Button("Speichern");
+		
+		this.shownCalendar = this.cf.getCg().getShownYear();
 		
 		this.buildBox();
 	}
@@ -149,7 +153,7 @@ public class CalendarUpdateBox extends HBox {
 							cs.getToDo().setDealine(deadline);
 							this.cf.getFm().getMM().update(cs.getToDo(), UpdateType.DEADLINE, deadline);
 							
-							this.cf.getCalendar().updateComplete();
+							this.cf.getCalendar().getCalendarOfYear(this.shownCalendar).updateComplete();
 							
 							this.updateListForDate(cs, cs.getToDo().getDeadline().getLd().getDayOfMonth());
 						}
@@ -187,7 +191,7 @@ public class CalendarUpdateBox extends HBox {
 		if(cs != null && newDate != 0 && this.tv != null && this.tv.getItems() != null) {
 			ObservableList<CalendarSource> list = FXCollections.observableArrayList();
 			
-			MonthCalendar mc = this.cf.getCalendar().getCalendarOfMonth(this.cf.getCg().getShowedMonth());
+			MonthCalendar mc = this.cf.getCalendar().getCalendarOfYear(this.shownCalendar).getCalendarOfMonth(this.cf.getCg().getShowedMonth());
 			
 			if(mc.getSources().containsKey(newDate)) {
 				Object[] o = mc.getSources().get(newDate);

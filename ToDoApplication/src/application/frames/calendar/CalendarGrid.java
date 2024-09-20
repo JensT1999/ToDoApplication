@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import application.utils.Utils;
+import application.utils.calendar.Calendar;
 import application.utils.calendar.CalendarContainer;
 import application.utils.calendar.CalendarSource;
 import application.utils.calendar.MonthCalendar;
@@ -24,7 +25,7 @@ public class CalendarGrid extends GridPane {
 	
 	private CalendarFrame cf;
 	
-	private YearCalendar cal;
+	private Calendar cal;
 	
 	private ColumnConstraints cl1;
 	private ColumnConstraints cl2;
@@ -42,7 +43,10 @@ public class CalendarGrid extends GridPane {
 	
 	private LinkedHashMap<Integer, CalendarContainer> container;
 	
+	private int shownYear;
 	private Month showedMonth;
+	
+	private YearCalendar shownCalendar;
 
 	public CalendarGrid(CalendarFrame cf) {
 		this.cf = cf;
@@ -64,26 +68,33 @@ public class CalendarGrid extends GridPane {
 				
 		this.container = new LinkedHashMap<Integer, CalendarContainer>();
 		
+		this.shownYear = LocalDate.now().getYear();
 		this.showedMonth = LocalDate.now().getMonth();
+		
+		this.shownCalendar = this.cal.getCalendarOfYear(this.shownYear);
 		
 		this.buildCalendar();
 	}
 	
 	public void setShowedMonth(Month m) {
-		if(m != null && m != showedMonth && this.cal != null) {
+		if(m != null && m != showedMonth && this.shownCalendar != null) {
 			this.showedMonth = m;
 			this.updateCalendar();
 		}
 	}
 	
 	public void update() {
-		if(this.cal != null) {
+		if(this.shownCalendar != null) {
 			this.updateCalendar();
 		}
 	}
 	
 	public Month getShowedMonth() {
 		return showedMonth;
+	}
+	
+	public int getShownYear() {
+		return shownYear;
 	}
 
 	private void buildCalendar() {
@@ -110,13 +121,13 @@ public class CalendarGrid extends GridPane {
 	}
 	
 	private void updateCalendar() {
-		if(this.cal != null && this.cal.getCalendars() != null &&
-				this.cal.getCalendars().size() > 0 && this.container != null &&
+		if(this.shownCalendar != null && this.shownCalendar.getCalendars() != null &&
+				this.shownCalendar.getCalendars().size() > 0 && this.container != null &&
 				this.container.size() > 0) {
-			if(this.cal.getCalendars().containsKey(this.showedMonth)) {
-				if(this.cal.getCalendarOfMonth(this.showedMonth) != null) {
+			if(this.shownCalendar.getCalendars().containsKey(this.showedMonth)) {
+				if(this.shownCalendar.getCalendarOfMonth(this.showedMonth) != null) {
 					this.clearCalendar();
-					MonthCalendar mc = this.cal.getCalendarOfMonth(showedMonth);
+					MonthCalendar mc = this.shownCalendar.getCalendarOfMonth(showedMonth);
 					
 					for(Entry<Integer, Object[]> entry : mc.getSources().entrySet()) {
 						if(entry.getKey() != 0 && entry.getValue() != null) {
@@ -171,11 +182,11 @@ public class CalendarGrid extends GridPane {
 	}
 	
 	private void loadCalendar() {
-		if(this.cal != null && this.cal.getCalendars() != null && 
-				this.cal.getCalendars().size() > 0) {
-			if(this.cal.getCalendars().containsKey(this.showedMonth)) {
-				if(this.cal.getCalendarOfMonth(this.showedMonth) != null) {
-					MonthCalendar mc = this.cal.getCalendarOfMonth(this.showedMonth);
+		if(this.shownCalendar != null && this.shownCalendar.getCalendars() != null && 
+				this.shownCalendar.getCalendars().size() > 0) {
+			if(this.shownCalendar.getCalendars().containsKey(this.showedMonth)) {
+				if(this.shownCalendar.getCalendarOfMonth(this.showedMonth) != null) {
+					MonthCalendar mc = this.shownCalendar.getCalendarOfMonth(this.showedMonth);
 					
 					int cc = 0;
 					int cr = 0;
@@ -250,7 +261,7 @@ public class CalendarGrid extends GridPane {
 		if(cc != null && cc.getText() != "") {
 			for(Map.Entry<Integer, CalendarContainer> entry : this.container.entrySet()) {
 				if(entry.getValue().equals(cc)) {
-					MonthCalendar mc = this.cal.getCalendarOfMonth(this.showedMonth);
+					MonthCalendar mc = this.shownCalendar.getCalendarOfMonth(this.showedMonth);
 					
 					if(mc.getSources().containsKey(entry.getKey())) {
 						Object[] o = mc.getSources().get(entry.getKey());

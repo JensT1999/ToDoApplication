@@ -1,6 +1,7 @@
 package application.frames.calendar;
 
 import application.frames.utils.FrameManager;
+import application.utils.calendar.Calendar;
 import application.utils.calendar.YearCalendar;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
@@ -9,7 +10,7 @@ public class CalendarFrame extends BorderPane {
 	
 	private FrameManager fm;
 	
-	private YearCalendar calendar;
+	private Calendar calendar;
 	
 	private CalendarGrid cg;
 	private CalendarBottom cb;
@@ -17,8 +18,9 @@ public class CalendarFrame extends BorderPane {
 	public CalendarFrame(FrameManager fm) {
 		this.fm = fm;
 		
-		this.calendar = new YearCalendar();
-		this.calendar.loadListIntoCalendar(this.fm.getMM().readDBAsObservableList());
+		this.calendar = new Calendar();
+		this.calendar.generate();
+		this.calendar.loadInputs(this.fm.getMM().readDBAsObservableList());
 		
 		this.cg = new CalendarGrid(this);
 		this.cb = new CalendarBottom(this);
@@ -37,7 +39,7 @@ public class CalendarFrame extends BorderPane {
 		return fm;
 	}
 	
-	public YearCalendar getCalendar() {
+	public Calendar getCalendar() {
 		return calendar;
 	}
 	
