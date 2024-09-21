@@ -1,6 +1,7 @@
 package application.utils.calendar;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,6 +58,170 @@ public class Calendar {
 			return this.calendars.get(year);
 		}
 		return null;
+	}
+	
+	public int getForYears() {
+		return forYears;
+	}
+	
+	public void updateComplete() {
+		this.update();
+	}
+	
+	private void update() {
+		if(this.calendars != null && this.calendars.size() > 0) {
+			try {
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						LinkedHashMap<Integer, ArrayList<CalendarSource>> yearMoves = new LinkedHashMap<Integer, ArrayList<CalendarSource>>();
+						
+						for(Map.Entry<Integer, YearCalendar> entry : calendars.entrySet()) {
+							if(entry.getKey() != 0 && entry.getValue() != null) {
+								YearCalendar yc = entry.getValue();
+								LinkedHashMap<Month, ArrayList<CalendarSource>> monthMoves = new LinkedHashMap<Month, ArrayList<CalendarSource>>();
+								
+								for(Map.Entry<Month, MonthCalendar> entry1 : yc.getCalendars().entrySet()) {
+									if(entry1.getKey() != null && entry1.getValue() != null) {
+										MonthCalendar mc = entry1.getValue();
+										ArrayList<CalendarSource> inMonthMoves = new ArrayList<CalendarSource>();
+										
+										for(Map.Entry<Integer, Object[]> entry2 : mc.getSources().entrySet()) {
+											if(entry2.getKey() != 0 && entry2.getValue() != null) {
+												Object[] o = entry2.getValue();
+												
+												if(o != null) {
+													for(int i = 0; i < o.length; i++) {
+														if(o[i] != null) {
+															CalendarSource cs = (CalendarSource) o[i];
+															LocalDate ld = cs.getToDo().getDeadline().getLd();
+															
+															if(ld.getYear() == entry.getKey()) {
+																if(ld.getMonth() == entry1.getKey()) {
+																	if(ld.getDayOfMonth() != entry2.getKey()) {
+																		inMonthMoves.add(cs);
+																		o[i] = null;
+																	}
+																} else {
+																	if(!monthMoves.containsKey(ld.getMonth())) {
+																		ArrayList<CalendarSource> list = new ArrayList<CalendarSource>();
+																		list.add(cs);
+																		monthMoves.put(ld.getMonth(), list);
+																	} else {
+																		ArrayList<CalendarSource> list = monthMoves.get(ld.getMonth());
+																		if(!list.contains(cs)) {
+																			list.add(cs);
+																		}
+																		monthMoves.put(ld.getMonth(), list);
+																	}
+																	o[i] = null;
+																}
+															} else {
+																if(!yearMoves.containsKey(ld.getYear())) {
+																	ArrayList<CalendarSource> list = new ArrayList<CalendarSource>();
+																	list.add(cs);
+																	yearMoves.put(ld.getYear(), list);
+																} else {
+																	ArrayList<CalendarSource> list = yearMoves.get(ld.getYear());
+																	if(!list.contains(cs)) {
+																		list.add(cs);
+																	}
+																	yearMoves.put(ld.getYear(), list);
+																}
+																o[i] = null;
+															}
+														}
+													}
+												}
+											}
+										}
+										
+										if(inMonthMoves != null && inMonthMoves.size() > 0) {
+											inMonthMoves.forEach(e -> {
+												if(e != null) {
+													if(mc.getSources().containsKey(e.getToDo().getDeadline().getLd().getDayOfMonth())) {
+														Object[] o = mc.getSources().get(e.getToDo().getDeadline().getLd().getDayOfMonth());
+														
+														for(int i = 0; i < o.length; i++) {
+															if(o[i] == null) {
+																o[i] = e;
+																break;
+															}
+														}
+													}
+												}
+											});
+										}
+									}
+								}
+								
+								for(Map.Entry<Month, ArrayList<CalendarSource>> entry1 : monthMoves.entrySet()) {
+									if(entry1.getKey() != null && entry1.getValue() != null && entry1.getValue().size() > 0) {
+										if(yc.getCalendarOfMonth(entry1.getKey()) != null) {
+											MonthCalendar mc = yc.getCalendarOfMonth(entry1.getKey());
+											
+											entry1.getValue().forEach(e -> {
+												if(e != null) {
+													if(mc.getSources().containsKey(e.getToDo().getDeadline().getLd().getDayOfMonth())) {
+														if(mc.getSources().get(e.getToDo().getDeadline().getLd().getDayOfMonth()) != null) {
+															Object[] o = mc.getSources().get(e.getToDo().getDeadline().getLd().getDayOfMonth());
+															for(int i = 0; i < o.length; i++) {
+																if(o[i] == null) {
+																	o[i] = e;
+																	break;
+																}
+															}
+														}														
+													}
+												}
+											});
+										}
+									}
+								}
+							}
+						}
+						
+						for(Map.Entry<Integer, ArrayList<CalendarSource>> entry : yearMoves.entrySet()) {
+							if(entry.getKey() != 0 && entry.getValue() != null && entry.getValue().size() > 0) {
+								if(calendars.containsKey(entry.getKey()) && calendars.get(entry.getKey()) != null) {
+									YearCalendar yc = calendars.get(entry.getKey());
+									
+									entry.getValue().forEach(e -> {
+										if(e != null) {
+											if(yc.getCalendars().containsKey(e.getToDo().getDeadline().getLd().getMonth())) {
+												if(yc.getCalendarOfMonth(e.getToDo().getDeadline().getLd().getMonth()) != null) {
+													MonthCalendar mc = yc.getCalendarOfMonth(e.getToDo().getDeadline().getLd().getMonth());
+													
+													if(mc.getSources().containsKey(e.getToDo().getDeadline().getLd().getDayOfMonth())) {
+														if(mc.getSources().get(e.getToDo().getDeadline().getLd().getDayOfMonth()) != null) {
+															Object[] o = mc.getSources().get(e.getToDo().getDeadline().getLd().getDayOfMonth());
+															
+															for(int i = 0; i < o.length; i++) {
+																if(o[i] == null) {
+																	o[i] = e;
+																	break;
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									});
+								}
+							}
+						}
+					}
+				});
+				
+				t.start();
+				
+				t.join();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void loadInputsInto(ObservableList<ToDos> list){
@@ -164,7 +329,7 @@ public class Calendar {
 				public LinkedHashMap<Integer, YearCalendar> call() throws Exception {
 					LinkedHashMap<Integer, YearCalendar> tempMap = new LinkedHashMap<Integer, YearCalendar>();
 					
-					while((currentYearCounter / 3) < (forYears / 3)) {
+					while((currentYearCounter / threads) < (forYears / threads)) {
 						YearCalendar yc = new YearCalendar();
 						tempMap.put((currentYear + currentYearCounter), yc);
 						currentYearCounter++;

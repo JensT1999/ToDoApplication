@@ -72,6 +72,10 @@ public class CalendarUpdateBox extends HBox {
 		this.tv.setItems(tempList);
 	}
 	
+	public void setShownYear(int year) {
+		this.shownCalendar = year;
+	}
+	
 	private void buildBox() {
 		this.tv.setEditable(false);
 		this.tv.setPrefSize(500, 100);
@@ -153,7 +157,7 @@ public class CalendarUpdateBox extends HBox {
 							cs.getToDo().setDealine(deadline);
 							this.cf.getFm().getMM().update(cs.getToDo(), UpdateType.DEADLINE, deadline);
 							
-							this.cf.getCalendar().getCalendarOfYear(this.shownCalendar).updateComplete();
+							this.cf.getCalendar().updateComplete();
 							
 							this.updateListForDate(cs, cs.getToDo().getDeadline().getLd().getDayOfMonth());
 						}
@@ -186,6 +190,8 @@ public class CalendarUpdateBox extends HBox {
 			this.tv.setItems(list);
 		}
 	}
+	
+	// Umprogrammieren auf Jahre
 	
 	private void updateListForDate(CalendarSource cs, int newDate) {
 		if(cs != null && newDate != 0 && this.tv != null && this.tv.getItems() != null) {

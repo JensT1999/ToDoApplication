@@ -83,6 +83,16 @@ public class CalendarGrid extends GridPane {
 		}
 	}
 	
+	public void setShownYear(int year) {
+		if(year != 0 && year >= LocalDate.now().getYear()) {
+			System.out.println("test");
+			this.shownYear = year;
+			this.shownCalendar = this.cal.getCalendarOfYear(this.shownYear);
+			this.updateCalendar();
+			this.cf.getCub().setShownYear(this.shownYear);
+		}
+	}
+	
 	public void update() {
 		if(this.shownCalendar != null) {
 			this.updateCalendar();

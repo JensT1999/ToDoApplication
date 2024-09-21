@@ -28,9 +28,7 @@ public class MonthChangeButton extends MenuButton {
 		this.cf = cf;
 		
 		this.selMonth = this.cf.getCg().getShowedMonth();
-		
-		this.setText(this.convertMonthToString(this.selMonth));
-		
+				
 		this.mi1 = new MenuItem(this.convertMonthToString(Month.JANUARY));
 		this.mi2 = new MenuItem(this.convertMonthToString(Month.FEBRUARY));
 		this.mi3 = new MenuItem(this.convertMonthToString(Month.MARCH));
@@ -50,6 +48,8 @@ public class MonthChangeButton extends MenuButton {
 	private void buildButton() {
 		this.setPrefWidth(150);
 		
+		this.setText(this.convertMonthToString(this.selMonth));
+
 		this.mi1.setOnAction(e -> this.changeSelectedMonth(this.mi1));
 		this.mi2.setOnAction(e -> this.changeSelectedMonth(this.mi2));
 		this.mi3.setOnAction(e -> this.changeSelectedMonth(this.mi3));

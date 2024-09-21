@@ -18,8 +18,11 @@ public class CalendarInteractionBox extends GridPane {
 	private ColumnConstraints cl1;
 	private ColumnConstraints cl2;
 	private ColumnConstraints cl3;
+	private ColumnConstraints cl4;
 	
 	private MonthChangeButton mcb;
+	
+	private YearChangeButton ycb;
 	
 	private TextField tf1;
 	private MenuButton mb;
@@ -36,8 +39,11 @@ public class CalendarInteractionBox extends GridPane {
 		this.cl1 = new ColumnConstraints();
 		this.cl2 = new ColumnConstraints();
 		this.cl3 = new ColumnConstraints();
+		this.cl4 = new ColumnConstraints();
 		
 		this.mcb = new MonthChangeButton(this.cf);
+		
+		this.ycb = new YearChangeButton(this.cf);
 		
 		this.tf1 = new TextField();
 		this.mb = new MenuButton("Priorität");
@@ -67,10 +73,13 @@ public class CalendarInteractionBox extends GridPane {
 		this.cl1.setPrefWidth(200);
 		this.cl2.setPrefWidth(200);
 		this.cl3.setPrefWidth(200);
-				
+		this.cl4.setPrefWidth(200);
+						
+		this.getColumnConstraints().addAll(cl1, cl2, cl3, cl4);
+		
 		GridPane.setMargin(mcb, new Insets(5));
 		
-		this.getColumnConstraints().addAll(cl1, cl2, cl3);
+		GridPane.setMargin(ycb, new Insets(5));
 		
 		this.tf1.setPrefWidth(150);
 		GridPane.setMargin(tf1, new Insets(5));
@@ -118,5 +127,6 @@ public class CalendarInteractionBox extends GridPane {
 		this.add(tf1, 0, 1);
 		this.add(mb, 1, 1);
 		this.add(dp, 2, 1);
+		this.add(ycb, 3, 0);
 	}
 }
